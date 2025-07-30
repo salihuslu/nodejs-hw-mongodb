@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon src/index.js",
     "seed": "node src/db/seedContacts.js",
-    "start": "node index.js"
+    "start": "node src/index.js"
 
   },
   "keywords": [],
