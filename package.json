@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon src/index.js",
-    "seed": "node src/db/seedContacts.js"
+    "seed": "node src/db/seedContacts.js",
+    "start": "node index.js"
+
   },
   "keywords": [],
   "author": "",
