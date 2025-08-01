@@ -1,17 +1,21 @@
-import mongoose from 'mongoose';
+import { Schema, model } from 'mongoose';
 
-const contactSchema = new mongoose.Schema(
+const contactSchema = new Schema(
     {
         name: {
             type: String,
-            required: true,
+            required: [true, 'Name is required'],
+            trim: true,
         },
         phoneNumber: {
             type: String,
-            required: true,
+            required: [true, 'Phone number is required'],
+            trim: true,
         },
         email: {
             type: String,
+            trim: true,
+            lowercase: true,
         },
         isFavourite: {
             type: Boolean,
@@ -20,13 +24,11 @@ const contactSchema = new mongoose.Schema(
         contactType: {
             type: String,
             enum: ['work', 'home', 'personal'],
-            required: true,
             default: 'personal',
+            required: true,
         },
     },
-    {
-        timestamps: true,
-    }
+    { timestamps: true }
 );
 
-export default mongoose.model('Contact', contactSchema);
+export default model('Contact', contactSchema);

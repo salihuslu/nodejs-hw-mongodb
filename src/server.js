@@ -4,7 +4,7 @@ import pino from 'pino-http';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 
-import contactsRouter from './routes/contacts.js';
+import contactsRouter from './routers/contacts.js';
 
 dotenv.config();
 
