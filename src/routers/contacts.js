@@ -1,18 +1,23 @@
 import express from 'express';
-import {
-    getContacts,
-    getContact,
-    createContact,
-    updateContact,
-    deleteContact,
-} from '../controllers/contacts.js';
+import createError from 'http-errors';
+import * as contactsController from '../controllers/contacts.js';
+import { ctrlWrapper } from '../utils/ctrlWrapper.js';
 
 const router = express.Router();
 
-router.get('/', getContacts);
-router.get('/:id', getContact);
-router.post('/', createContact);
-router.put('/:id', updateContact);
-router.delete('/:id', deleteContact);
+router.get('/', ctrlWrapper(contactsController.getContacts));
+
+router.get('/:id', ctrlWrapper(async (req, res) => {
+    const contact = await contactsController.getContact(req, res);
+    if (!contact) {
+        throw createError(404, 'Contact not found');
+    }
+}));
+
+router.post('/', ctrlWrapper(contactsController.createContact));
+
+router.put('/:id', ctrlWrapper(contactsController.updateContact));
+
+router.delete('/:id', ctrlWrapper(contactsController.deleteContact));
 
 export default router;
