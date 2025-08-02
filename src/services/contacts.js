@@ -11,3 +11,6 @@ export const updateContactById = async (id, data) =>
 
 export const deleteContactById = async (id) =>
     await Contact.findByIdAndDelete(id);
+
+export const patchContactById = async (id, data) =>
+    await Contact.findByIdAndUpdate(id, data, { new: true });
