@@ -50,10 +50,12 @@ export const updateContact = async (req, res) => {
 export const deleteContact = async (req, res) => {
     const { id } = req.params;
     const deleted = await deleteContactById(id);
+
     if (!deleted) {
         throw createError(404, 'Contact not found');
     }
-    res.json({ message: 'Contact deleted' });
+    res.status(204).send();
+
 };
 export const patchContact = async (req, res) => {
     const { id } = req.params;
