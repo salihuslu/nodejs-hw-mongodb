@@ -1,26 +1,38 @@
 import express from 'express';
-import createError from 'http-errors';
+
 import * as contactsController from '../controllers/contacts.js';
 import { ctrlWrapper } from '../utils/ctrlWrapper.js';
+
+import { validateBody } from '../middlewares/validateBody.js';
+import { isValidId } from '../middlewares/isValidId.js';
+import { contactSchemas } from '../schemas/contactSchemas.js';
 
 const router = express.Router();
 
 router.get('/', ctrlWrapper(contactsController.getContacts));
 
-router.get('/:id', ctrlWrapper(async (req, res) => {
-    const contact = await contactsController.getContact(req, res);
-    if (!contact) {
-        throw createError(404, 'Contact not found');
-    }
-}));
+router.get('/:id', isValidId, ctrlWrapper(contactsController.getContact));
 
-router.post('/', ctrlWrapper(contactsController.createContact));
+router.post(
+    '/',
+    validateBody(contactSchemas.addSchema),
+    ctrlWrapper(contactsController.createContact)
+);
 
-router.put('/:id', ctrlWrapper(contactsController.updateContact));
+router.put(
+    '/:id',
+    isValidId,
+    validateBody(contactSchemas.addSchema),
+    ctrlWrapper(contactsController.updateContact)
+);
 
-router.delete('/:id', ctrlWrapper(contactsController.deleteContact));
+router.patch(
+    '/:id',
+    isValidId,
+    validateBody(contactSchemas.updateSchema),
+    ctrlWrapper(contactsController.patchContact)
+);
 
-router.patch('/:id', ctrlWrapper(contactsController.patchContact));
-
+router.delete('/:id', isValidId, ctrlWrapper(contactsController.deleteContact));
 
 export default router;
