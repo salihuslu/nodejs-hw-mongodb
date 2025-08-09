@@ -5,7 +5,7 @@ import { ctrlWrapper } from '../utils/ctrlWrapper.js';
 
 import { validateBody } from '../middlewares/validateBody.js';
 import { isValidId } from '../middlewares/isValidId.js';
-import { contactSchemas } from '../schemas/contactSchemas.js';
+import { createContactSchema } from '../schemas/contactSchemas.js';
 
 const router = express.Router();
 
@@ -15,21 +15,21 @@ router.get('/:id', isValidId, ctrlWrapper(contactsController.getContact));
 
 router.post(
     '/',
-    validateBody(contactSchemas.addSchema),
+    validateBody(createContactSchema.addSchema),
     ctrlWrapper(contactsController.createContact)
 );
 
 router.put(
     '/:id',
     isValidId,
-    validateBody(contactSchemas.addSchema),
+    validateBody(createContactSchema.addSchema),
     ctrlWrapper(contactsController.updateContact)
 );
 
 router.patch(
     '/:id',
     isValidId,
-    validateBody(contactSchemas.updateSchema),
+    validateBody(createContactSchema.updateSchema),
     ctrlWrapper(contactsController.patchContact)
 );
 
