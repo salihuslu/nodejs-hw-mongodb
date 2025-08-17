@@ -7,7 +7,7 @@ import Session from "../models/Session.js";
 export const register = async ({ name, email, password }) => {
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-        throw createHttpError(409, "Email in use");
+        throw createHttpError(409, "Email already in use");
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -27,15 +27,15 @@ export const register = async ({ name, email, password }) => {
 export const login = async ({ email, password }) => {
     const user = await User.findOne({ email });
     if (!user) {
-        throw createHttpError(401, "Invalid email or password");
+        throw createHttpError(401, "Invalid credentials");
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-        throw createHttpError(401, "Invalid email or password");
+        throw createHttpError(401, "Invalid credentials");
     }
 
-    await Session.deleteOne({ userId: user._id });
+    await Session.deleteMany({ userId: user._id });
 
     const accessToken = jwt.sign(
         { id: user._id },
@@ -68,7 +68,8 @@ export const refreshTokens = async (oldRefreshToken) => {
 
     try {
         jwt.verify(oldRefreshToken, process.env.JWT_REFRESH_SECRET);
-    } catch {
+    } catch (error) {
+        await Session.deleteOne({ refreshToken: oldRefreshToken });
         throw createHttpError(401, "Expired refresh token");
     }
 
@@ -84,11 +85,15 @@ export const refreshTokens = async (oldRefreshToken) => {
         { expiresIn: "30d" }
     );
 
-    session.accessToken = newAccessToken;
-    session.refreshToken = newRefreshToken;
-    session.accessTokenValidUntil = new Date(Date.now() + 15 * 60 * 1000);
-    session.refreshTokenValidUntil = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-    await session.save();
+    await Session.updateOne(
+        { _id: session._id },
+        {
+            accessToken: newAccessToken,
+            refreshToken: newRefreshToken,
+            accessTokenValidUntil: new Date(Date.now() + 15 * 60 * 1000),
+            refreshTokenValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        }
+    );
 
     return { accessToken: newAccessToken, refreshToken: newRefreshToken };
 };

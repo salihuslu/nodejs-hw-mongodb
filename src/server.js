@@ -17,7 +17,10 @@ dotenv.config();
 export const setupServer = async () => {
     const app = express();
 
-    app.use(cors());
+    app.use(cors({
+        origin: process.env.CLIENT_URL,
+        credentials: true
+    }));
     app.use(pino());
     app.use(express.json());
     app.use(cookieParser());
