@@ -1,5 +1,6 @@
 import * as authService from "../services/auth.js";
 import createHttpError from "http-errors";
+import jwt from "jsonwebtoken";
 
 export const register = async (req, res, next) => {
     try {
@@ -40,5 +41,44 @@ export const login = async (req, res, next) => {
         });
     } catch (error) {
         next(error);
+    }
+};
+
+export const refresh = async (req, res) => {
+    try {
+        const refreshToken = req.cookies.refreshToken;
+
+        if (!refreshToken) {
+            return res.status(401).json({
+                status: 401,
+                message: "Refresh token not provided",
+            });
+        }
+
+        jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, decoded) => {
+            if (err) {
+                return res.status(403).json({
+                    status: 403,
+                    message: "Invalid refresh token",
+                });
+            }
+
+            const accessToken = jwt.sign(
+                { id: decoded.id },
+                process.env.ACCESS_TOKEN_SECRET,
+                { expiresIn: "15m" }
+            );
+
+            return res.status(200).json({
+                status: 200,
+                message: "Access token refreshed successfully",
+                data: { accessToken },
+            });
+        });
+    } catch (error) {
+        res.status(500).json({
+            status: 500,
+            message: "Server error",
+        });
     }
 };

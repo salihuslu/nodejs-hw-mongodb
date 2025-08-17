@@ -10,6 +10,8 @@ import { notFoundHandler } from './middlewares/notFoundHandler.js';
 
 import authRouter from './routers/auth.js';
 
+import cookieParser from "cookie-parser";
+
 dotenv.config();
 
 export const setupServer = async () => {
@@ -18,6 +20,7 @@ export const setupServer = async () => {
     app.use(cors());
     app.use(pino());
     app.use(express.json());
+    app.use(cookieParser());
 
     const { MONGODB_USER, MONGODB_PASSWORD, MONGODB_URL, MONGODB_DB } = process.env;
     const connectionString = `mongodb+srv://${MONGODB_USER}:${MONGODB_PASSWORD}@${MONGODB_URL}/${MONGODB_DB}?retryWrites=true&w=majority`;
