@@ -11,16 +11,25 @@ export const getAllContacts = async (skip, limit, countOnly = false, filter = {}
         .limit(limit);
 };
 
-export const getContactById = async (id) => await Contact.findById(id);
+export const getContactById = async (id, ownerId) =>
+    await Contact.findOne({ _id: id, owner: ownerId });
 
-export const createNewContact = async (data) => await Contact.create(data);
+export const createNewContact = async (data) =>
+    await Contact.create(data);
 
-export const updateContactById = async (id, data) =>
-    await Contact.findByIdAndUpdate(id, data, { new: true });
+export const updateContactById = async (id, data, ownerId) =>
+    await Contact.findOneAndUpdate(
+        { _id: id, owner: ownerId },
+        data,
+        { new: true }
+    );
 
-export const patchContactById = async (id, data) =>
-    await Contact.findByIdAndUpdate(id, data, { new: true });
+export const patchContactById = async (id, data, ownerId) =>
+    await Contact.findOneAndUpdate(
+        { _id: id, owner: ownerId },
+        data,
+        { new: true }
+    );
 
-export const deleteContactById = async (id) =>
-    await Contact.findByIdAndDelete(id);
-
+export const deleteContactById = async (id, ownerId) =>
+    await Contact.findOneAndDelete({ _id: id, owner: ownerId });
