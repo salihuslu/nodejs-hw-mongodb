@@ -8,7 +8,6 @@ import { authenticate } from '../middlewares/authenticate.js';
 
 const router = express.Router();
 
-// Tüm route'lara authenticate middleware'ini uygula
 router.use(authenticate);
 
 router.get('/', ctrlWrapper(contactsController.getContacts));
