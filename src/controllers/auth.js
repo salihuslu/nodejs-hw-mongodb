@@ -1,6 +1,11 @@
 import * as authService from "../services/auth.js";
 import createHttpError from "http-errors";
 
+import jwt from "jsonwebtoken";
+import createError from "http-errors";
+import nodemailer from "nodemailer";
+import User from "../models/User.js";
+
 export const register = async (req, res, next) => {
     try {
         const data = await authService.register(req.body);
@@ -85,6 +90,64 @@ export const logout = async (req, res, next) => {
         }
 
         res.sendStatus(204);
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const sendResetEmail = async (req, res, next) => {
+    try {
+        const { email } = req.body;
+
+        // 1. Kullanıcı var mı kontrol
+        const user = await User.findOne({ email });
+        if (!user) {
+            throw createError(404, "User not found!");
+        }
+
+        // 2. Token üret (5 dakika geçerli)
+        const token = jwt.sign(
+            { email: user.email },
+            process.env.JWT_SECRET,
+            { expiresIn: "5m" }
+        );
+
+        // 3. Reset URL oluştur
+        const resetUrl = `${process.env.APP_DOMAIN}/reset-password?token=${token}`;
+
+        // 4. Nodemailer transporter
+        const transporter = nodemailer.createTransport({
+            host: process.env.SMTP_HOST,
+            port: process.env.SMTP_PORT,
+            secure: false,
+            auth: {
+                user: process.env.SMTP_USER,
+                pass: process.env.SMTP_PASSWORD,
+            },
+        });
+
+        // 5. Mail gönder
+        const mailOptions = {
+            from: process.env.SMTP_FROM,
+            to: user.email,
+            subject: "Password Reset Request",
+            html: `
+          <h3>Hello ${user.name || "User"},</h3>
+          <p>You requested a password reset.</p>
+          <p>Click the link below to reset your password (valid for 5 minutes):</p>
+          <a href="${resetUrl}">${resetUrl}</a>
+        `,
+        };
+
+        await transporter.sendMail(mailOptions).catch(() => {
+            throw createError(500, "Failed to send the email, please try again later.");
+        });
+
+        res.status(200).json({
+            status: 200,
+            message: "Reset password email has been successfully sent.",
+            data: {},
+        });
     } catch (error) {
         next(error);
     }
