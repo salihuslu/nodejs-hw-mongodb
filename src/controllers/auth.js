@@ -1,10 +1,9 @@
 import * as authService from "../services/auth.js";
 import createHttpError from "http-errors";
-
 import jwt from "jsonwebtoken";
-import createError from "http-errors";
 import nodemailer from "nodemailer";
 import User from "../models/User.js";
+import Session from "../models/Session.js";
 
 export const register = async (req, res, next) => {
     try {
@@ -99,23 +98,19 @@ export const sendResetEmail = async (req, res, next) => {
     try {
         const { email } = req.body;
 
-        // 1. Kullanıcı var mı kontrol
         const user = await User.findOne({ email });
         if (!user) {
-            throw createError(404, "User not found!");
+            throw createHttpError(404, "User not found!");
         }
 
-        // 2. Token üret (5 dakika geçerli)
         const token = jwt.sign(
             { email: user.email },
             process.env.JWT_SECRET,
             { expiresIn: "5m" }
         );
 
-        // 3. Reset URL oluştur
         const resetUrl = `${process.env.APP_DOMAIN}/reset-password?token=${token}`;
 
-        // 4. Nodemailer transporter
         const transporter = nodemailer.createTransport({
             host: process.env.SMTP_HOST,
             port: process.env.SMTP_PORT,
@@ -126,7 +121,6 @@ export const sendResetEmail = async (req, res, next) => {
             },
         });
 
-        // 5. Mail gönder
         const mailOptions = {
             from: process.env.SMTP_FROM,
             to: user.email,
@@ -140,12 +134,43 @@ export const sendResetEmail = async (req, res, next) => {
         };
 
         await transporter.sendMail(mailOptions).catch(() => {
-            throw createError(500, "Failed to send the email, please try again later.");
+            throw createHttpError(500, "Failed to send the email, please try again later.");
         });
 
         res.status(200).json({
             status: 200,
             message: "Reset password email has been successfully sent.",
+            data: {},
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const resetPassword = async (req, res, next) => {
+    try {
+        const { token, password } = req.body;
+
+        let payload;
+        try {
+            payload = jwt.verify(token, process.env.JWT_SECRET);
+        } catch (err) {
+            throw createHttpError(401, "Token is expired or invalid.");
+        }
+
+        const user = await User.findOne({ email: payload.email });
+        if (!user) {
+            throw createHttpError(404, "User not found!");
+        }
+
+        user.password = password;
+        await user.save();
+
+        await Session.deleteMany({ userId: user._id });
+
+        res.status(200).json({
+            status: 200,
+            message: "Password has been successfully reset.",
             data: {},
         });
     } catch (error) {
