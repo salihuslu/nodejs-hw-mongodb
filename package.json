@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "nodemon src/index.js",
     "seed": "node src/db/seedContacts.js",
-    "start": "node src/index.js"
+    "start": "node src/index.js",
+    "build": "npm run build-docs",
+    "build-docs": "redocly bundle --ext json -o docs/swagger.json",
+    "preview-docs": "redocly preview-docs"
   },
   "keywords": [],
   "author": "",
@@ -20,6 +23,7 @@
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
+    "google-auth-library": "^10.3.0",
     "http-errors": "^2.0.0",
     "joi": "^18.0.0",
     "jsonwebtoken": "^9.0.2",
@@ -32,6 +36,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.32.0",
+    "@redocly/cli": "^2.0.8",
     "eslint": "^9.32.0",
     "globals": "^16.3.0",
     "nodemon": "^3.1.10"
