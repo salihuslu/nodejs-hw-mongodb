@@ -68,7 +68,7 @@ export const createContact = async (req, res, next) => {
 
         if (req.file) {
             photoUrl = await uploadToCloudinary(req.file.path);
-            await fs.unlink(req.file.path); // tmp dosyayı sil
+            await fs.unlink(req.file.path);
         }
 
         const newContact = await createNewContact(

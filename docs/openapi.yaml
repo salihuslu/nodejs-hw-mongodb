@@ -1,0 +1,21 @@
+openapi: 3.1.0
+info:
+  version: 1.0.0
+  title: <uygulamanızın adı>
+  license:
+    name: Apache 2.0
+    url: <http://www.apache.org/licenses/LICENSE-2.0.html>
+  description: >
+    <uygulamanızın açıklaması>
+tags:
+  # kullanacağınız etiketler
+servers:
+  - url: <http://localhost:3000>
+  - url: #yayınlanmış siteye bağlantı
+paths:
+  # burada uç noktaların bağlantıları olacak
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
