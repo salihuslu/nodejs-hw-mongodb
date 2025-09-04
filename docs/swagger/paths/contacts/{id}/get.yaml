@@ -1,0 +1,24 @@
+get:
+  tags:
+    - Contacts
+  summary: Get contact by ID
+  operationId: getContactById
+  description: Retrieve a single contact resource using its unique ID.
+  security:
+    - bearerAuth: []
+  parameters:
+    - in: path
+      name: id
+      required: true
+      description: The unique identifier of the contact
+      schema:
+        type: string
+  responses:
+    "200":
+      description: Contact found
+      content:
+        application/json:
+          schema:
+            $ref: ../../../components/schemas/contact.yaml#/Contact
+    "404":
+      description: Contact not found

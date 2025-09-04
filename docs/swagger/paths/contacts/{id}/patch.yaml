@@ -1,0 +1,41 @@
+patch:
+  tags:
+    - Contacts
+  summary: Update a contact partially
+  operationId: updateContact
+  description: Update specific fields of a contact by its ID.
+  security:
+    - bearerAuth: []
+  parameters:
+    - in: path
+      name: id
+      required: true
+      description: The unique identifier of the contact
+      schema:
+        type: string
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            name:
+              type: string
+              example: "Updated Name"
+            email:
+              type: string
+              format: email
+              example: "updated@example.com"
+            phone:
+              type: string
+              example: "+905554443322"
+  responses:
+    "200":
+      description: Contact updated successfully
+      content:
+        application/json:
+          schema:
+            $ref: ../../../components/schemas/contact.yaml#/Contact
+    "404":
+      description: Contact not found

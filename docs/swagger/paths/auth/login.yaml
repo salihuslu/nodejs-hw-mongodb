@@ -1,0 +1,34 @@
+summary: User login
+tags:
+  - Auth
+requestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        type: object
+        required:
+          - email
+          - password
+        properties:
+          email:
+            type: string
+            format: email
+            example: john@example.com
+          password:
+            type: string
+            format: password
+            example: secret123
+responses:
+  "200":
+    description: Login successful, JWT returned
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            token:
+              type: string
+              example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+  "401":
+    description: Invalid credentials

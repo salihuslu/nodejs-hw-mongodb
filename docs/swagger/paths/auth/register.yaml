@@ -1,0 +1,30 @@
+summary: User registration
+tags:
+  - Auth
+requestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        type: object
+        required:
+          - name
+          - email
+          - password
+        properties:
+          name:
+            type: string
+            example: John Doe
+          email:
+            type: string
+            format: email
+            example: john@example.com
+          password:
+            type: string
+            format: password
+            example: secret123
+responses:
+  "201":
+    description: User successfully registered
+  "400":
+    description: Validation error

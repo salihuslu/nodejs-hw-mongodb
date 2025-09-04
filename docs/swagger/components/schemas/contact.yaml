@@ -1,0 +1,16 @@
+Contact:
+  type: object
+  properties:
+    id:
+      type: string
+      example: "12345"
+    name:
+      type: string
+      example: "John Doe"
+    email:
+      type: string
+      format: email
+      example: "john.doe@example.com"
+    phone:
+      type: string
+      example: "+905551112233"
