@@ -12,7 +12,7 @@ tags:
     description: Operations about contacts
 servers:
   - url: http://localhost:3000
-  - url: https://your-deployed-app-url
+  - url: https://nodejs-hw-mongodb-3inw.onrender.com/
 
 paths:
   /contacts:
@@ -39,7 +39,9 @@ paths:
       /auth/logout:
         post:
           $ref: ./swagger/paths/auth/logout.yaml
-    
+      /auth/refresh-token:
+        post:
+          $ref: ../swagger/paths/auth/refreshToken/post.yaml
       /auth/current:
         get:
           $ref: ./swagger/paths/auth/current.yaml
